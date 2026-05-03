@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+    content="CS 766 Project: OV-DGSS — Depth-Aware Open-Vocabulary Semantic Segmentation of Adverse-Condition Urban Streetscapes">
+  <meta name="keywords" content="OV-DGSS, Open-Vocabulary Segmentation, Domain Generalization, Depth, CLIP, ACDC, PEFT">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS 766 Project — OV-DGSS</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <!-- MathJax for rendering inline math like $F_\ell$ -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* Pipeline diagram styling */
+    .pipeline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.3rem;
+      padding: 1.5rem 0.25rem;
+      font-family: 'Google Sans', sans-serif;
+    }
+    .pipeline .col {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .pipeline .box {
+      border-radius: 10px;
+      padding: 0.6rem 0.45rem;
+      text-align: center;
+      font-size: 0.8rem;
+      line-height: 1.25;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      word-break: break-word;
+    }
+    .pipeline .box .tag {
+      display: block;
+      font-size: 0.68rem;
+      letter-spacing: 0.03em;
+      margin-top: 0.2rem;
+      opacity: 0.75;
+    }
+    .pipeline .frozen { background: #eef2f7; color: #2c3e50; border: 1px solid #c8d3e0; }
+    .pipeline .trainable { background: #fff3e0; color: #b35900; border: 1px solid #f0c48a; }
+    .pipeline .input { background: #f5f5f5; color: #333; border: 1px dashed #bbb; font-style: italic; }
+    .pipeline .output { background: #e6f4ea; color: #1e6b3a; border: 1px solid #a8d8b8; font-weight: 600; }
+    .pipeline .arrow {
+      flex: 0 0 auto;
+      text-align: center;
+      color: #888;
+      font-size: 1.2rem;
+      font-weight: 500;
+      padding: 0 0.05rem;
+    }
+    .pipeline-legend {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      font-size: 0.8rem;
+      color: #555;
+      margin-top: 0.5rem;
+    }
+    .pipeline-legend .swatch {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border-radius: 3px;
+      margin-right: 0.35rem;
+      vertical-align: middle;
+    }
+    @media (max-width: 768px) {
+      .pipeline { flex-direction: column; }
+      .pipeline .arrow { transform: rotate(90deg); padding: 0.2rem 0; }
+    }
+
+    /* Tighten title block */
+    .publication-title {
+      line-height: 1.15;
+    }
+  </style>
+</head>
+
+<body>
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-2 publication-title">
+              Depth-Aware Open-Vocabulary Segmentation <br>
+              of Adverse-Condition Urban Streetscapes
+            </h1>
+            <h2 class="subtitle is-4" style="margin-top: 0.4rem;">
+              CS 766 Final Project &nbsp;·&nbsp; OV-DGSS
+            </h2>
+
+            <div class="is-size-5 publication-authors" style="margin-top: 0.6rem;">
+              <span class="author-block">Chen Wei</span>
+            </div>
+            <div class="is-size-6 publication-authors">
+              <span class="author-block">University of Wisconsin–Madison</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero teaser">
+    <div class="container is-max-desktop">
+      <div class="hero-body">
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3">Project Presentation</h2>
+          </div>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-10">
+            <video id="presentation-video" controls playsinline style="width: 100%; display: block;">
+              <source src="./static/videos/presentation.mp4" type="video/mp4">
+              Your browser does not support HTML5 video.
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+
+      <!-- Introduction -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Introduction</h2>
+          <div class="content has-text-justified">
+            <p>
+              We build <b>OV-DGSS</b>, a depth-aware open-vocabulary semantic segmentation pipeline for adverse-condition
+              urban scenes (night, rain, fog). It augments a frozen CLIP–ConvNeXt backbone with a monocular depth prior and
+              a geometry-conditioned text query decoder, trained in a parameter-efficient regime. On 50 ACDC adverse-condition
+              frames, OV-DGSS reaches <b>mIoU&nbsp;0.620&nbsp;/&nbsp;0.486</b> on <i>Seen</i>&nbsp;/&nbsp;<i>Unseen</i>
+              Cityscapes classes — beating FC-CLIP (0.435&nbsp;/&nbsp;0.468) and SED (0.376&nbsp;/&nbsp;0.457).
+            </p>
+          </div>
+          <div class="columns is-centered">
+            <div class="column is-full">
+              <img src="./static/images/qualitative_4x5.png" alt="Qualitative comparison teaser"
+                style="width: 100%; display: block; margin: 0 auto;">
+              <br>
+              <div class="title is-6 has-text-centered">
+                RGB &nbsp;|&nbsp; Ground Truth &nbsp;|&nbsp; FC-CLIP &nbsp;|&nbsp; SED &nbsp;|&nbsp; <b>Ours</b>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Motivation -->
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3 has-text-centered">Motivation</h2>
+          <div class="content has-text-justified">
+            <p>
+              Zero-shot vision–language segmenters work well on clean scenes but fail in the cases that matter most for
+              mobility and safety analysis: nighttime, rain, glare, occlusion. Symptoms are predictable — boundaries blur
+              into shadow, small but safety-critical classes (signs, poles) vanish, and large regions collapse onto a
+              single background label.
+            </p>
+            <p>
+              Our hypothesis: under adverse conditions <b>texture alone is a weak cue</b>, but a geometric prior — ground
+              plane, vertical surfaces, near/far — survives illumination loss. The challenge is to inject that prior into a
+              frozen open-vocabulary backbone <i>without</i> sacrificing zero-shot text alignment and <i>without</i> the
+              prohibitive cost of full-parameter VLM training.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method Section -->
+  <section class="section">
+    <div class="container is-max-desktop">
+
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Method</h2>
+          <div class="content has-text-justified">
+            <p>
+              OV-DGSS has three frozen foundation streams (visual, depth, text) plus a small trainable head. The depth stream
+              is projected into the visual feature space and added to it; class prompts become <i>GeoText queries</i> that
+              attend to the fused features through a cross-attention decoder, with a <i>cross-modal positional encoding</i>
+              (CMPE) injecting depth-derived geometry into the attention keys.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pipeline diagram -->
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <div class="pipeline">
+            <!-- Column 1: inputs -->
+            <div class="col">
+              <div class="box input">RGB image</div>
+              <div class="box input">Class prompts<br><span class="tag">19 Cityscapes classes</span></div>
+            </div>
+            <div class="arrow">→</div>
+            <!-- Column 2: foundation encoders -->
+            <div class="col">
+              <div class="box frozen">CLIP–ConvNeXt<br>visual encoder<br><span class="tag">frozen → $V_\ell$</span></div>
+              <div class="box frozen">Depth-VFM<br>encoder<br><span class="tag">frozen → $D_\ell$</span></div>
+              <div class="box frozen">CLIP text tower<br><span class="tag">frozen → $q_c$</span></div>
+            </div>
+            <div class="arrow">→</div>
+            <!-- Column 3: trainable adapters / fusion -->
+            <div class="col">
+              <div class="box trainable">Depth projection $\phi_\ell$<br><span class="tag">trainable</span></div>
+              <div class="box trainable" style="background:#fff8e6;">Fused features<br>$F_\ell = V_\ell + \phi_\ell(D_\ell)$</div>
+              <div class="box trainable">Cross-attn decoder + CMPE<br><span class="tag">trainable</span></div>
+            </div>
+            <div class="arrow">→</div>
+            <!-- Column 4: output -->
+            <div class="col">
+              <div class="box output">Per-class<br>segmentation masks</div>
+            </div>
+          </div>
+          <div class="pipeline-legend">
+            <span><span class="swatch" style="background:#eef2f7; border:1px solid #c8d3e0;"></span>Frozen foundation</span>
+            <span><span class="swatch" style="background:#fff3e0; border:1px solid #f0c48a;"></span>Trainable adapter</span>
+            <span><span class="swatch" style="background:#e6f4ea; border:1px solid #a8d8b8;"></span>Output</span>
+          </div>
+          <div class="title is-6 has-text-centered" style="margin-top: 1rem;">
+            Conceptual data flow of OV-DGSS. Only the depth projection, CMPE, and cross-attention decoder are trained.
+          </div>
+        </div>
+      </div>
+
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <div class="content has-text-justified">
+            <p>
+              <b>Why depth?</b> Adverse-condition frames are dominated by low-contrast texture: shadows swallow object edges
+              and rain blurs long-range structure. The depth-VFM produces features that carry coarse geometric structure —
+              near/far, ground plane, vertical surfaces — that survives illumination loss. We compute a delta feature
+              $F_\ell = V_\ell + \phi_\ell(D_\ell)$, where $\phi_\ell$ is a small learnable projection that aligns depth
+              features into the VLM feature space. This is also the exact intervention point of the zero-tensor ablation
+              reported below.
+            </p>
+            <p>
+              <b>Why GeoText queries + CMPE?</b> So that a query for <i>road</i> does not have to rediscover the ground plane
+              from raw pixels every time the lighting changes. CMPE injects depth-derived position into the attention keys,
+              keeping the road–sidewalk boundary stable even when shadow + headlight glare would otherwise shift it by tens
+              of pixels.
+            </p>
+            <p>
+              <b>Data &amp; baselines.</b> We evaluate on the adverse-condition splits (<code>night</code>, <code>rain</code>,
+              <code>fog</code>) of the <b>ACDC</b> validation set, with 19 Cityscapes-aligned categories. We compare against
+              <b>FC-CLIP</b> and <b>SED</b> using their official released ConvNeXt-L checkpoints, run via Detectron2 against
+              the same prompt set.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <section class="section">
+    <div class="container is-max-desktop">
+
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Results</h2>
+        </div>
+      </div>
+
+      <!-- 1. Scenario mIoU -->
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <h3 class="title is-4">1 · Scenario-based mIoU</h3>
+          <div class="content has-text-justified">
+            <p>
+              50 adverse-condition frames per model. We split the 19 Cityscapes classes into <b>Seen</b> (<code>trainId&nbsp;0–9</code>:
+              road, sidewalk, building, wall, fence, pole, traffic light, traffic sign, vegetation, terrain) and <b>Unseen</b>
+              (<code>trainId&nbsp;10–18</code>: sky, person, rider, car, truck, bus, train, motorcycle, bicycle).
+            </p>
+          </div>
+
+          <div class="table-container" style="display: flex; justify-content: center;">
+            <table class="table is-bordered is-striped is-narrow is-hoverable">
+              <thead>
+                <tr>
+                  <th>Scenario</th>
+                  <th>FC-CLIP</th>
+                  <th>SED</th>
+                  <th>OV-DGSS (Ours)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Seen</strong> (trainId 0–9)</td>
+                  <td>0.435</td>
+                  <td>0.376</td>
+                  <td><b>0.620</b></td>
+                </tr>
+                <tr>
+                  <td><strong>Unseen</strong> (trainId 10–18)</td>
+                  <td>0.468</td>
+                  <td>0.457</td>
+                  <td><b>0.486</b></td>
+                </tr>
+                <tr>
+                  <td><strong>Average</strong></td>
+                  <td>0.452</td>
+                  <td>0.417</td>
+                  <td><b>0.553</b></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="columns is-centered">
+            <div class="column is-four-fifths">
+              <img src="./static/images/scenario_miou_bar.png" alt="Scenario-based mIoU bar chart"
+                style="width: 90%; display: block; margin: 0 auto;">
+            </div>
+          </div>
+
+          <div class="content has-text-justified">
+            <p>
+              The Seen-class margin is large (+0.185 over FC-CLIP, +0.244 over SED) because ground-plane / wall geometry is
+              exactly where depth helps when contrast collapses. On Unseen classes the margin is small but consistent
+              (+0.018 over FC-CLIP) — depth is a structure prior, not a recognition prior, so it does not push the frontier
+              on objects whose shape (not geometry) is the dominant cue.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Qualitative grid -->
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <h3 class="title is-4">2 · Qualitative comparison (1×5)</h3>
+          <div class="content has-text-justified">
+            <p>
+              Columns: <b>RGB</b> · <b>Ground Truth</b> · <b>FC-CLIP</b> · <b>SED</b> · <b>OV-DGSS</b>. All masks use the
+              Cityscapes color palette.
+            </p>
+          </div>
+          <div class="columns is-centered">
+            <div class="column is-full">
+              <img src="./static/images/qualitative_grid.png" alt="Qualitative 1x5 grid (full)"
+                style="width: 100%; display: block; margin: 0 auto;">
+            </div>
+          </div>
+          <div class="content has-text-justified">
+            <p>
+              Two patterns are worth calling out. First, in <i>nighttime</i> frames both baselines suffer boundary bleed
+              along the road–sidewalk transition; OV-DGSS's fused depth keeps the ground plane consistent. Second, in
+              <i>rain/fog</i> frames where long-range structure is washed out, the baselines tend to collapse large regions
+              onto a single background class (sky or vegetation), while OV-DGSS retains the road–vegetation–building
+              partition because depth disambiguates it.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Zero-tensor depth ablation -->
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <h3 class="title is-4">3 · Zero-tensor depth ablation</h3>
+          <div class="content has-text-justified">
+            <p>
+              At inference time we monkey-patch the depth-fusion step to replace $D_\ell$ with
+              <code>torch.zeros_like(depth_features)</code>, leaving everything else untouched. The model is forced to
+              produce a mask using only the frozen visual stream plus the CMPE/decoder — the depth signal is surgically
+              severed.
+            </p>
+          </div>
+          <div class="columns is-centered">
+            <div class="column is-full">
+              <img src="./static/images/depth_zero_ablation.png" alt="Zero-tensor depth ablation"
+                style="width: 100%; display: block; margin: 0 auto;">
+              <br>
+              <div class="title is-6 has-text-centered">
+                Left: RGB. Middle: normal mask. Right: mask after replacing depth features with zeros.
+              </div>
+            </div>
+          </div>
+          <div class="content has-text-justified">
+            <p>
+              Differences appear at the road/sidewalk boundary, in road markings, and along vertical structures (poles,
+              signs). This is a <i>pseudo-ablation</i>: we do not retrain without depth, so the surviving weights were never
+              adapted to live without it. The degradation is therefore an upper bound on the depth branch's contribution —
+              but it is the cleanest white-box evidence that the model actually <i>uses</i> its geometric prior.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Cross-attention -->
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <h3 class="title is-4">4 · Cross-attention response visualization</h3>
+          <div class="content has-text-justified">
+            <p>
+              A forward hook on the decoder's cross-attention submodule captures the output activation; we normalize, reshape
+              into an $H\times W$ heatmap, colorize with <code>COLORMAP_JET</code>, and blend onto the RGB input.
+            </p>
+          </div>
+          <div class="columns is-centered">
+            <div class="column is-three-fifths">
+              <img src="./static/images/cross_attention_overlay.png" alt="Cross-attention overlay"
+                style="width: 100%; display: block; margin: 0 auto;">
+            </div>
+          </div>
+          <div class="content has-text-justified">
+            <p>
+              <b>Honesty note.</b> What we capture is the <i>output activation</i> of the cross-attention submodule, not the
+              softmax-normalized attention tensor; the reshape is heuristic. The most we can claim is that the decoder's
+              cross-attention produces a spatially non-trivial response that broadly follows scene structure — not per-class
+              grounding.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Conclusion Section -->
+  <section class="section">
+    <div class="container is-max-desktop">
+
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Conclusion</h2>
+          <div class="content has-text-justified">
+            <p>
+              OV-DGSS shows that a small set of trainable adapters — a depth projection, a cross-modal positional encoding,
+              and a cross-attention decoder — is enough to turn a frozen open-vocabulary VLM into a competitive
+              adverse-condition segmenter, without retraining the backbone. Geometry helps where contrast fails; depth is a
+              structure prior, not a recognition prior; PEFT-style fusion is sufficient to bridge the domain gap.
+            </p>
+            <p>
+              <b>Caveats.</b> The mIoU study is a 50-frame subset, not full ACDC val. The cross-attention figure is a
+              heuristic response map, not a rigorous per-class attention. The depth ablation is pseudo (not retrained).
+              These are honest scope decisions, not claims of leaderboard parity.
+            </p>
+            <p>
+              <b>Future Directions:</b>
+            </p>
+            <ul>
+              <li><b>Full-set ACDC evaluation</b> with confidence intervals.</li>
+              <li><b>Retrained no-depth variant</b> for a calibrated bound on the depth branch's contribution.</li>
+              <li><b>Rigorous per-class cross-attention maps</b> using the actual softmax-normalized attention tensor.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- References Section -->
+  <section class="section">
+    <div class="container is-max-desktop">
+
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">References</h2>
+          <div class="content has-text-justified">
+            <p>
+              [1] Q. Yu, J. He, X. Deng, X. Shen, L.-C. Chen. "Convolutions Die Hard: Open-Vocabulary Segmentation with Single Frozen Convolutional CLIP" (FC-CLIP). <i>NeurIPS</i>, 2023.
+            </p>
+            <p>
+              [2] B. Xie, J. Cao, J. Xie, F. S. Khan, Y. Pang. "SED: A Simple Encoder-Decoder for Open-Vocabulary Semantic Segmentation." <i>CVPR</i>, 2024.
+            </p>
+            <p>
+              [3] C. Sakaridis, D. Dai, L. Van Gool. "ACDC: The Adverse Conditions Dataset with Correspondences for Semantic Driving Scene Understanding." <i>ICCV</i>, 2021.
+            </p>
+            <p>
+              [4] E. J. Hu, Y. Shen, P. Wallis, Y. Allen-Zhu, Y. Li, S. Wang, L. Wang, W. Chen. "LoRA: Low-Rank Adaptation of Large Language Models." <i>ICLR</i>, 2022.
+            </p>
+            <p>
+              [5] N. Ding et al. "Parameter-Efficient Fine-Tuning of Large-Scale Pre-Trained Language Models." <i>Nature Machine Intelligence</i>, 5(3):220–235, 2023.
+            </p>
+            <p>
+              [6] A. Radford et al. "Learning Transferable Visual Models From Natural Language Supervision" (CLIP). <i>ICML</i>, 2021.
+            </p>
+            <p>
+              [7] L. Yang, B. Kang, Z. Huang, X. Xu, J. Feng, H. Zhao. "Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data." <i>CVPR</i>, 2024.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This website is adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>, licensed under a
+              <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>
