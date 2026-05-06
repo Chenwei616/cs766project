@@ -6,4 +6,4 @@ This folder holds **inference and visualization scripts** for the course project
 - **Data & checkpoint policy:** **[`website_submission/docs/DATA_AND_CHECKPOINTS.md`](website_submission/docs/DATA_AND_CHECKPOINTS.md)**  
 - **Pack a downloadable archive:** `bash website_submission/scripts/pack_release.sh`
 
-See https://github.com/Chenwei616/cs766project/tree/main/source for source code
+See <https://github.com/Chenwei616/cs766project/tree/main/source> for source code
