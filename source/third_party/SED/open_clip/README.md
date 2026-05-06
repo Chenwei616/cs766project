@@ -609,7 +609,7 @@ If you found this repository useful, please consider citing:
 
 ```bibtex
 @inproceedings{schuhmann2022laionb,
-  title={{LAION}-5B: An open large-scale dataset for training next generation image-text models},
+  title={LAION-5B: An open large-scale dataset for training next generation image-text models},
   author={Christoph Schuhmann and
           Romain Beaumont and
           Richard Vencu and
