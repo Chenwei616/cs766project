@@ -6,4 +6,4 @@ This folder holds **inference and visualization scripts** for the course project
 - **Data & checkpoint policy:** **[`website_submission/docs/DATA_AND_CHECKPOINTS.md`](website_submission/docs/DATA_AND_CHECKPOINTS.md)**  
 - **Pack a downloadable archive:** `bash website_submission/scripts/pack_release.sh`
 
-Set **`VIREO_REPO_ROOT`** to your local clone of the training repository (`Vireo/` containing `configs/`, `vireo/`, etc.). If omitted, paths resolve via `project_paths.py` (sibling `vireo_repro/Vireo` or legacy dev layout).
+See https://github.com/Chenwei616/cs766project/tree/main/source for source code
