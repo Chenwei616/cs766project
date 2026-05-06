@@ -7,7 +7,3 @@ This folder holds **inference and visualization scripts** for the course project
 - **Pack a downloadable archive:** `bash website_submission/scripts/pack_release.sh`
 
 Set **`VIREO_REPO_ROOT`** to your local clone of the training repository (`Vireo/` containing `configs/`, `vireo/`, etc.). If omitted, paths resolve via `project_paths.py` (sibling `vireo_repro/Vireo` or legacy dev layout).
-
----
-
-课程项目 **评测与可视化脚本**。完整提交说明、数据与权重策略、打包脚本见 **`website_submission/`** 目录。

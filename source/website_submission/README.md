@@ -1,13 +1,10 @@
-# Presentation & Evaluation Code Release  
-# 演示与评测代码发布说明
+# Presentation & Evaluation Code Release
 
 This package contains **source code** for qualitative comparison, depth ablation visualization, attention overlays, and scenario mIoU plots used in our course project website and report.
 
-本仓库提供课程项目网站与报告所用的 **源代码**：多模型定性对比、深度消融、注意力叠图、场景 mIoU 等。
-
 ---
 
-## 1. What is included | 包含内容
+## 1. What is included
 
 | Component | Description |
 |-----------|-------------|
@@ -27,7 +24,7 @@ This package contains **source code** for qualitative comparison, depth ablation
 
 ---
 
-## 2. What is NOT included (by design) |  deliberate exclusions
+## 2. What is NOT included (deliberate exclusions)
 
 We follow standard academic practice: **code release without hosting copyrighted datasets or multi‑GB weights.**
 
@@ -39,11 +36,9 @@ We follow standard academic practice: **code release without hosting copyrighted
 
 **Teaching staff:** Full end-to-end reproduction requires GPU clusters, matching package versions, registered datasets, and trained or downloaded weights—we document steps but do not guarantee one-click reruns.
 
-中文：**数据集与大权重均不提供**；请自行下载数据、自行训练或从原作者链接下载权重；详见 `docs/DATA_AND_CHECKPOINTS.md`。
-
 ---
 
-## 3. Layout expectations | 目录约定
+## 3. Layout expectations
 
 Recommended monorepo layout (adjust `VIREO_REPO_ROOT` if different):
 
@@ -66,7 +61,7 @@ Run scripts with **cwd = `Vireo`** when configs use relative paths (e.g. `open_v
 
 ---
 
-## 4. Quick sanity check (no data required) | 快速自检（无需数据）
+## 4. Quick sanity check (no data required)
 
 ```bash
 python -c "from pathlib import Path; import sys; sys.path.insert(0,'.'); from project_paths import get_vireo_root; print(get_vireo_root())"
@@ -74,7 +69,7 @@ python -c "from pathlib import Path; import sys; sys.path.insert(0,'.'); from pr
 
 ---
 
-## 5. Building the downloadable zip | 打包发布
+## 5. Building the downloadable zip
 
 From this repo:
 
@@ -87,13 +82,13 @@ The zip **excludes** `.git`, checkpoints, `.npy` caches, compiled `.so`, and lar
 
 ---
 
-## 6. License | 许可
+## 6. License
 
 Presentation scripts: **Apache-2.0** or project license as stated in the course repo (match your `LICENSE` file).  
 Third-party code (FC-CLIP, SED, MMSeg) remains under **their** original licenses—do not remove upstream license headers.
 
 ---
 
-## 7. Citation | 引用
+## 7. Citation
 
 Cite the original FC-CLIP, SED, MMSegmentation, and your Vireo technical report as required by the course.
