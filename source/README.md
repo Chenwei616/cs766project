@@ -1,4 +1,4 @@
-# Vireo — Presentation & evaluation utilities
+# Presentation & evaluation utilities
 
 This folder holds **inference and visualization scripts** for the course project (multi-model qualitative grids, depth ablation, attention overlays, scenario mIoU).
 
