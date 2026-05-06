@@ -1,7 +1,7 @@
 # CS 766 project website
 
 This is the repository for the source code of the CS 766 final project website:
-**OV-DGSS — Depth-Aware Open-Vocabulary Semantic Segmentation of Adverse-Condition Urban Streetscapes**.
+**Depth-Aware Open-Vocabulary Semantic Segmentation of Adverse-Condition Urban Streetscapes**.
 
 
 # Website License

@@ -1,0 +1,10 @@
+# Minimal hints for the conda/env used with these scripts.
+# The actual training stack lives in the Vireo / MMSegmentation repo — install that environment first.
+#
+# Typical inference deps (versions vary by CUDA):
+# torch, torchvision
+# mmsegmentation, mmengine
+# opencv-python-headless
+# matplotlib, pandas, numpy
+
+# Baselines (optional separate env ov_baselines): see setup_baseline_env.sh and third_party READMEs.

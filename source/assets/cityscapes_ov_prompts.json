@@ -1,0 +1,21 @@
+[
+  "road,railroad",
+  "sidewalk,pavement",
+  "building,buildings,edifice,edifices,house,ceiling",
+  "wall,walls,brick wall,stone wall,tile wall,wood wall",
+  "fence,fences",
+  "pole,poles",
+  "traffic light,traffic lights",
+  "traffic sign,stop sign",
+  "vegetation,tree,trees,palm tree,bushes",
+  "terrain,river,sand,sea,snow,water,mountain,grass,dirt,rock",
+  "sky,clouds",
+  "person",
+  "rider",
+  "car,cars",
+  "truck,trucks",
+  "bus,buses",
+  "train,trains,locomotive,locomotives,freight train",
+  "motorcycle,motorcycles",
+  "bicycle,bicycles,bike,bikes"
+]

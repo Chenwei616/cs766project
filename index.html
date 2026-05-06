@@ -4,10 +4,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-    content="CS 766 Project: OV-DGSS — Depth-Aware Open-Vocabulary Semantic Segmentation of Adverse-Condition Urban Streetscapes">
-  <meta name="keywords" content="OV-DGSS, Open-Vocabulary Segmentation, Domain Generalization, Depth, CLIP, ACDC, PEFT">
+    content="CS 766 Project: Depth-Aware Open-Vocabulary Semantic Segmentation of Adverse-Condition Urban Streetscapes">
+  <meta name="keywords" content="Open-Vocabulary Segmentation, Domain Generalization, Depth, CLIP, ACDC, PEFT">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CS 766 Project — OV-DGSS</title>
+  <title>CS 766 Project</title>
 
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
 
@@ -117,7 +117,7 @@
               of Adverse-Condition Urban Streetscapes
             </h1>
             <h2 class="subtitle is-4" style="margin-top: 0.4rem;">
-              CS 766 Final Project &nbsp;·&nbsp; OV-DGSS
+              CS 766 Final Project
             </h2>
 
             <div class="is-size-5 publication-authors" style="margin-top: 0.6rem;">
@@ -125,6 +125,30 @@
             </div>
             <div class="is-size-6 publication-authors">
               <span class="author-block">University of Wisconsin–Madison</span>
+            </div>
+
+            <!-- Deliverables -->
+            <div class="column has-text-centered" style="margin-top: 1.2rem;">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="./proposal.pdf" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>Proposal</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="./midterm.pdf" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>Mid-term Report</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="./source/" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fab fa-github"></i></span>
+                    <span>Source Code</span>
+                  </a>
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -162,10 +186,10 @@
           <h2 class="title is-3">Introduction</h2>
           <div class="content has-text-justified">
             <p>
-              We build <b>OV-DGSS</b>, a depth-aware open-vocabulary semantic segmentation pipeline for adverse-condition
+              We build a <b>depth-aware open-vocabulary semantic segmentation pipeline</b> for adverse-condition
               urban scenes (night, rain, fog). It augments a frozen CLIP–ConvNeXt backbone with a monocular depth prior and
               a geometry-conditioned text query decoder, trained in a parameter-efficient regime. On 50 ACDC adverse-condition
-              frames, OV-DGSS reaches <b>mIoU&nbsp;0.620&nbsp;/&nbsp;0.486</b> on <i>Seen</i>&nbsp;/&nbsp;<i>Unseen</i>
+              frames, our model reaches <b>mIoU&nbsp;0.620&nbsp;/&nbsp;0.486</b> on <i>Seen</i>&nbsp;/&nbsp;<i>Unseen</i>
               Cityscapes classes — beating FC-CLIP (0.435&nbsp;/&nbsp;0.468) and SED (0.376&nbsp;/&nbsp;0.457).
             </p>
           </div>
@@ -214,7 +238,7 @@
           <h2 class="title is-3">Method</h2>
           <div class="content has-text-justified">
             <p>
-              OV-DGSS has three frozen foundation streams (visual, depth, text) plus a small trainable head. The depth stream
+              Our pipeline has three frozen foundation streams (visual, depth, text) plus a small trainable head. The depth stream
               is projected into the visual feature space and added to it; class prompts become <i>GeoText queries</i> that
               attend to the fused features through a cross-attention decoder, with a <i>cross-modal positional encoding</i>
               (CMPE) injecting depth-derived geometry into the attention keys.
@@ -258,7 +282,7 @@
             <span><span class="swatch" style="background:#e6f4ea; border:1px solid #a8d8b8;"></span>Output</span>
           </div>
           <div class="title is-6 has-text-centered" style="margin-top: 1rem;">
-            Conceptual data flow of OV-DGSS. Only the depth projection, CMPE, and cross-attention decoder are trained.
+            Conceptual data flow of our pipeline. Only the depth projection, CMPE, and cross-attention decoder are trained.
           </div>
         </div>
       </div>
@@ -322,7 +346,7 @@
                   <th>Scenario</th>
                   <th>FC-CLIP</th>
                   <th>SED</th>
-                  <th>OV-DGSS (Ours)</th>
+                  <th>Ours</th>
                 </tr>
               </thead>
               <tbody>
@@ -372,7 +396,7 @@
           <h3 class="title is-4">2 · Qualitative comparison (1×5)</h3>
           <div class="content has-text-justified">
             <p>
-              Columns: <b>RGB</b> · <b>Ground Truth</b> · <b>FC-CLIP</b> · <b>SED</b> · <b>OV-DGSS</b>. All masks use the
+              Columns: <b>RGB</b> · <b>Ground Truth</b> · <b>FC-CLIP</b> · <b>SED</b> · <b>Ours</b>. All masks use the
               Cityscapes color palette.
             </p>
           </div>
@@ -385,9 +409,9 @@
           <div class="content has-text-justified">
             <p>
               Two patterns are worth calling out. First, in <i>nighttime</i> frames both baselines suffer boundary bleed
-              along the road–sidewalk transition; OV-DGSS's fused depth keeps the ground plane consistent. Second, in
+              along the road–sidewalk transition; our model's fused depth keeps the ground plane consistent. Second, in
               <i>rain/fog</i> frames where long-range structure is washed out, the baselines tend to collapse large regions
-              onto a single background class (sky or vegetation), while OV-DGSS retains the road–vegetation–building
+              onto a single background class (sky or vegetation), while our model retains the road–vegetation–building
               partition because depth disambiguates it.
             </p>
           </div>
@@ -457,6 +481,65 @@
     </div>
   </section>
 
+  <!-- Problems Encountered Section -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Problems Encountered</h2>
+        </div>
+      </div>
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <div class="content has-text-justified">
+            <p>
+              Most of the engineering pain came not from the model itself but from the surrounding reproducibility scaffolding.
+              We summarize the issues that consumed real time and how we resolved them.
+            </p>
+            <ol>
+              <li>
+                <b>Scope pivot from SVI to ACDC.</b> The original proposal targeted multi-view Google Street View Imagery,
+                but acquiring and densely annotating adverse-weather SVI within the project timeline was infeasible. After
+                the mid-term review we re-scoped to the ACDC adverse-condition validation set, which is annotated at
+                Cityscapes-trainId granularity and provides a controlled night/rain/fog split that is closer to publishable
+                practice.
+              </li>
+              <li>
+                <b>Baseline reproducibility.</b> Running FC-CLIP and SED faithfully required their <i>official</i> Detectron2
+                code paths rather than HuggingFace / MMSegmentation re-implementations. This forced a separate
+                <code>ov_baselines</code> conda environment, compiling FC-CLIP's deformable ops, and (for SED) putting its
+                bundled <code>open_clip/src</code> at the front of <code>sys.path</code> so that
+                <code>encode_image(..., dense=True)</code> resolved to the right module. We ended up shelling out to a
+                subprocess so that each baseline runs in its own isolated environment.
+              </li>
+              <li>
+                <b>Class-id alignment across heterogeneous outputs.</b> FC-CLIP produces panoptic outputs, SED produces
+                dense CLIP-feature maps over an ad-hoc vocabulary, and our model emits per-class logits over the 19
+                Cityscapes <code>trainId</code>s. We had to write a small adapter that maps each baseline's raw output
+                into the same trainId space before any metric computation, otherwise the mIoU comparison would be silently
+                unfair.
+              </li>
+              <li>
+                <b>Confusion-matrix overflow from invalid predictions.</b> Some baseline predictions occasionally fell
+                outside <code>[0, n_cls)</code> (out-of-vocabulary classes leaking through, or 255 void labels copied
+                from the input). Naively passing those into <code>np.bincount</code> blew up the confusion matrix. We added
+                an explicit mask to drop pixels with predictions outside the valid range before accumulation
+                (<code>presentation_common.compute_confusion_matrix</code>).
+              </li>
+              <li>
+                <b>Cross-attention "visualization" was less rigorous than intended.</b> The original plan was to extract
+                softmax-normalized attention weights and slice them per class. In practice the forward hook captures the
+                <i>output activation</i> of the cross-attention submodule, not the attention matrix itself, and reshaping
+                that tensor to H × W is heuristic. Rather than fake the rigorous version, we kept the heuristic heatmap and
+                added an explicit honesty note in the report and on this page.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Conclusion Section -->
   <section class="section">
     <div class="container is-max-desktop">
@@ -466,7 +549,7 @@
           <h2 class="title is-3">Conclusion</h2>
           <div class="content has-text-justified">
             <p>
-              OV-DGSS shows that a small set of trainable adapters — a depth projection, a cross-modal positional encoding,
+              Our approach shows that a small set of trainable adapters — a depth projection, a cross-modal positional encoding,
               and a cross-attention decoder — is enough to turn a frozen open-vocabulary VLM into a competitive
               adverse-condition segmenter, without retraining the backbone. Geometry helps where contrast fails; depth is a
               structure prior, not a recognition prior; PEFT-style fusion is sufficient to bridge the domain gap.
